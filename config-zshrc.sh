@@ -185,7 +185,7 @@ ALIAS_INSTALADO=false
 if ! grep -q "alias pon_tema_iterm2=" ~/.zshrc; then
   if pedir_confirmacion "¿Quieres instalar el alias pon_tema_iterm2?"; then
     # Lío de comillas para que funcione en zsh
-    echo "alias pon_tema_iterm2=\"python3 \\\"$SCRIPT_DIR/pon_tema_iterm2.py\\\"\"" >> ~/.zshrc
+    echo "alias pon_tema_iterm2=\"\\\"$SCRIPT_DIR/pon_tema_iterm2.py\\\"\"" >> ~/.zshrc
     ALIAS_INSTALADO=true
   fi
 else
