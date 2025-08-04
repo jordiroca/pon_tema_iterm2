@@ -106,6 +106,37 @@ async def coge_temas_ordenados(connection) -> list:
         print(f"Error al obtener temas: {str(e)}")
         raise
 
+async def cambiar_tema_iterm2(connection, theme_name):
+    try:
+        # Obtener el preset de color
+        preset = await iterm2.ColorPreset.async_get(connection, theme_name)
+        if not preset:
+            print(f"Tema '{theme_name}' no encontrado")
+            return
+            
+        # Obtener la aplicación y la sesión actual
+        app = await iterm2.async_get_app(connection)
+        if not app or not app.current_terminal_window:
+            print("No se pudo obtener la ventana actual de iTerm2")
+            return
+            
+        session = app.current_terminal_window.current_tab.current_session
+        if not session:
+            print("No se pudo obtener la sesión actual")
+            return
+            
+        # Obtener el perfil y aplicar el preset
+        profile = await session.async_get_profile()
+        if profile:
+            await profile.async_set_color_preset(preset)
+            print(f"Tema '{theme_name}' aplicado exitosamente")
+        else:
+            print("No se pudo obtener el perfil de la sesión")
+            
+    except Exception as e:
+        print(f"Error al cambiar tema: {str(e)}")
+        raise
+    
 async def pon_tema_iterm2(connection):
     try:
         if not (cookie := await get_auth_cookie()):
@@ -126,6 +157,7 @@ async def pon_tema_iterm2(connection):
         tema=menu_fzf(temas)
         if tema is not False:
             console.print(f"Tema seleccionado: {tema}")
+            await cambiar_tema_iterm2(connection, tema)
             with open(".iterm2theme", "w") as f:
                 f.write(tema)
         else:
